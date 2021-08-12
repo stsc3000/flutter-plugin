@@ -33,7 +33,7 @@ typealias PaymentCompletionHandler = (Bool) -> Void
 class PaymentHandler: NSObject {
   
   /// Holds the current status of the payment process.
-  var paymentStatus = PKPaymentAuthorizationStatus.failure
+  var paymentStatus: PKPaymentAuthorizationStatus
   
   /// Stores a reference to the Flutter result while the operation completes.
   var paymentResult: FlutterResult!
@@ -62,10 +62,12 @@ class PaymentHandler: NSObject {
   /// - parameter paymentItems: A list of payment elements that determine the total amount purchased.
   /// - returns: The payment method information selected by the user.
   func startPayment(result: @escaping FlutterResult, paymentConfiguration: String, paymentItems: [[String: Any?]]) {
-    
     // Set active payment result.
     paymentResult = result
-    
+
+    // Reset paymentStatus to initial value
+    paymentStatus = .failure
+
     // Deserialize payment configuration.
     guard let paymentRequest = PaymentHandler.createPaymentRequest(from: paymentConfiguration, paymentItems: paymentItems) else {
       result(FlutterError(code: "invalidPaymentConfiguration", message: "It was not possible to create a payment request from the provided configuration. Review your payment configuration and run again", details: nil))
